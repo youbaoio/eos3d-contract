@@ -70,16 +70,15 @@ void win_diamond::on(const currency::transfer &t, account_name code) {
   // transfer must be EOS token from eosio.token
   eosio_assert(code == N(eosio.token), "transfer not from eosio.token");
   eosio_assert(t.to == _this_contract, "transfer not made to this contract");
+  symbol_type symbol{S(4, EOS)};
+  eosio_assert(t.quantity.symbol == symbol, "asset must be EOS");
+  eosio_assert(t.quantity.is_valid(), "invalid quantity");
 
   // if transfer amount is 0.0001 EOS then withdraw
   if (t.quantity.amount == 1) {
     withdraw(t.from, t.quantity);
     return;
   }
-
-  symbol_type symbol{S(4, EOS)};
-  eosio_assert(t.quantity.symbol == symbol, "asset must be EOS");
-  eosio_assert(t.quantity.is_valid(), "invalid quantity");
 
   auto user = t.from;
   auto amount = t.quantity.amount;
